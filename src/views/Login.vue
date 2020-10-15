@@ -94,6 +94,10 @@ export default {
         this.usernameErrMsg === '' &&
         this.passwordErrMsg === ''
       ) {
+        await this.$dialog.confirm({
+          title: '提示',
+          message: '登录吗?'
+        })
         let res = await this.$axios.post('http://localhost:3000/login', {
           username: this.username,
           password: this.password

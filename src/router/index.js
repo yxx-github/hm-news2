@@ -9,6 +9,7 @@ import User from '../views/User.vue'
 import Edit from '../views/Edit.vue'
 import MyFollow from '../views/MyFollow.vue'
 import MyComment from '../views/MyComment.vue'
+import MyStar from '../views/MyStar.vue'
 
 // 注册
 Vue.use(VueRouter)
@@ -47,13 +48,19 @@ const router = new VueRouter({
     {
       path: '/mycomment',
       component: MyComment
+    },
+    {
+      path: '/mystar',
+      component: MyStar
     }
   ]
 })
 
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
-  if (to.path === '/user') {
+  const authPath = ['/user', '/edit', '/myfollow', '/mycomment', '/mystar']
+
+  if (authPath.includes(to.path)) {
     let token = localStorage.getItem('token')
 
     if (token) {
