@@ -14,7 +14,7 @@
       <div class="item" v-for="item in list" :key="item.id">
         <div class="date">{{item.create_date | date}}</div>
         <div class="parent" v-if="item.parent">
-          <div class="parent-nickname">回复: {{item.parent.nickname}}</div>
+          <div class="parent-nickname">回复: {{item.parent.user.nickname}}</div>
           <div class="parent-content">{{item.parent.content}}</div>
         </div>
         <div class="content">{{item.content}}</div>
