@@ -75,7 +75,7 @@ export default {
       if (res.data.statusCode === 200) {
         this.tabList = res.data.data
       }
-      console.log('栏目列表', res.data.data)
+      // console.log('栏目列表', res.data.data)
       // 请求获取文章列表
       this.getPostList(this.tabList[this.active].id)
     },
@@ -99,17 +99,17 @@ export default {
         //  真正加载完毕, 把 isRefreshing =  false
         this.isRefreshing = false
       }
-      console.log('文章列表', this.postList)
+      // console.log('文章列表', this.postList)
     },
     // 触底
     onLoad() {
       this.pageIndex++
       this.getPostList(this.tabList[this.active].id)
-      console.log('触底')
+      // console.log('触底')
     },
     // 下拉刷新
     onRefresh() {
-      console.log('下拉')
+      // console.log('下拉')
       // 1.处理之前的数据
       this.postList = []
       this.pageIndex = 1
