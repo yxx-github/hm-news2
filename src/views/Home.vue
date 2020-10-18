@@ -35,7 +35,7 @@
           >
             <!-- 列表 -->
             <hm-post
-              @click.native="$router.push('/detail')"
+              @click.native="$router.push(`/detail/${post.id}`)"
               v-for="(post, index) in postList"
               :key="index"
               :post="post"

@@ -11,6 +11,7 @@ import MyFollow from '../views/MyFollow.vue'
 import MyComment from '../views/MyComment.vue'
 import MyStar from '../views/MyStar.vue'
 import Home from '../views/Home.vue'
+import Detail from '../views/Detail.vue'
 
 // 注册
 Vue.use(VueRouter)
@@ -57,6 +58,10 @@ const router = new VueRouter({
     {
       path: '/home',
       component: Home
+    },
+    {
+      path: '/detail/:id',
+      component: Detail
     }
   ]
 })

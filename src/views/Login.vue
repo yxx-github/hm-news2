@@ -113,8 +113,12 @@ export default {
           // 2.提示
           this.$toast.success(message)
 
-          // 3. 跳转
-          this.$router.push('/user')
+          // 3. 跳转 需要判断
+          if (this.$route.params.back) {
+            this.$router.back()
+          } else {
+            this.$router.push('/user')
+          }
         } else {
           this.$toast.fail(message)
         }
