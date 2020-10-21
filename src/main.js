@@ -105,6 +105,11 @@ axios.interceptors.response.use(res => {
   return res
 })
 
+// 创建bus实例 （事件总线）
+const bus = new Vue()
+Vue.prototype.$bus = bus // 挂载到原型上
+
+
 // 搭建vue实例
 new Vue({
   // 挂载路由

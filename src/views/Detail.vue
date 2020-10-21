@@ -15,10 +15,10 @@
     </div>
     <!-- 内容 -->
     <div class="container">
-      <div class="title line2">是啥和废话话费巨大的和地方艰苦地方很多覅合法化会复活复活</div>
+      <div class="title line2">{{ detail.title }}</div>
       <div class="name">
-        <span>新华网</span>
-        <span>2020-10-10</span>
+        <span>{{ detail.user.nickname }}</span>
+        <span>{{ detail.create_date | date }}</span>
       </div>
       <!-- 1.文本内容 (图片 + 文字) -->
       <div v-if="detail.type === 1" v-html="detail.content" class="content"></div>
@@ -28,10 +28,11 @@
       <div class="bottom">
         <div @click="like" class="like" :class="{ active: detail.has_like }">
           <i class="iconfont icondianzan"></i>
-          <i>{{detail.like_length}}</i>
+          <i>{{ detail.like_length }}</i>
         </div>
       </div>
     </div>
+    <div ref="box"></div>
     <!-- 评论 -->
     <div class="comments">
       <hm-comment v-for="comment in commentsList" :key="comment.id" :comment="comment"></hm-comment>
@@ -43,18 +44,23 @@
           <input ref="input" @focus="handleFocus" type="text" placeholder="写跟帖">
         </div>
         <div class="center">
-          <van-icon name="chat-o" badge="9"/>
+          <van-icon name="chat-o" :badge="detail.comment_length"/>
         </div>
-        <div class="right">
-          <van-icon name="star-o"/>
+        <div class="right" @click="star">
+          <van-icon name="star-o" :class="{ active: detail.has_star }"/>
         </div>
       </div>
       <div class="textarea" v-else>
         <div class="left">
-          <textarea ref="textarea" @blur="handleBlur" placeholder="请输入内容"></textarea>
+          <textarea
+            v-model="content"
+            ref="textarea"
+            @blur="handleBlur"
+            :placeholder="replyName ? '回复:' + replyName : '请输入内容'"
+          ></textarea>
         </div>
         <div class="right">
-          <div class="send">发送</div>
+          <div @touchstart="send" class="send">发送</div>
         </div>
       </div>
     </div>
@@ -65,19 +71,35 @@
 export default {
   data() {
     return {
-      detail: {}, // 详情页信息
+      detail: {
+        user: {}
+      }, // 详情页信息
       commentsList: [], //评论信息
-      isShow: false // 控制 textarea 是否显示
+      isShow: false, // 控制 textarea 是否显示
+      replyId: '', // 回复id
+      replyName: '', // 回复昵称
+      content: '' // 回复内容
     }
   },
   created() {
     console.log('详情页', this.$route.params.id)
     this.getDetail()
     this.getComments()
+
+    // 注册事件(哪里接收数据 哪里注册)
+    this.$bus.$on('reply', async (replyId, replyName) => {
+      // console.log('detail', replyId, replyName)
+      // 保存
+      this.replyId = replyId //用来发送请求
+      this.replyName = replyName // 仅仅是为了显示在 textarea 中
+
+      // textarea显示
+      this.isShow = true
+      // 自动聚焦
+      await this.$nextTick()
+      this.$refs.textarea && this.$refs.textarea.focus()
+    })
   },
-  // mounted() {
-  //   console.log(this.$refs)
-  // },
   methods: {
     // 获取详情页信息
     async getDetail() {
@@ -151,12 +173,64 @@ export default {
       }
     },
     // 聚焦
-    handleFocus() {
+    async handleFocus() {
+      // textarea 显示
       this.isShow = true
+
+      // textarea自动聚焦 (数据更新 更新视图是异步的 所以要用 $nextTick() )
+      await this.$nextTick()
+      this.$refs.textarea.focus()
     },
     // 失焦
     handleBlur() {
+      // 隐藏 textarea
       this.isShow = false
+
+      // 清空
+      if (!this.content) {
+        // 判断 如果没有内容 则清空 replyId 和 replyName
+        this.replyId = ''
+        this.replyName = ''
+      }
+    },
+    // 发送回复
+    async send() {
+      console.log('发送')
+      let res = await this.$axios.post(
+        `/post_comment/${this.$route.params.id}`,
+        {
+          content: this.content,
+          parent_id: this.replyId
+        }
+      )
+      if (res.data.statusCode === 200) {
+        // 提示
+        this.$toast.success(res.data.message)
+
+        // 重新请求评论信息
+        this.getComments()
+
+        // 清空
+        this.replyId = ''
+        this.replyName = ''
+        this.content = ''
+
+        // 隐藏textarea
+        this.isShow = false
+
+        // 发表评论成功 滚动到该位置
+        this.$refs.box.scrollIntoView()
+      }
+    },
+    // 点击收藏
+    async star() {
+      let res = await this.$axios.get(`/post_star/${this.$route.params.id}`)
+      if (res.data.statusCode === 200) {
+        // 提示
+        this.$toast.success(res.data.message)
+        // 重新请求
+        this.getDetail()
+      }
     }
   }
 }
@@ -278,6 +352,9 @@ video {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .active {
+      color: #f00;
     }
   }
   .textarea {

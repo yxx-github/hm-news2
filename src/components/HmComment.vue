@@ -7,9 +7,9 @@
       </div>
       <div class="center">
         <div class="name">{{comment.user.nickname}}</div>
-        <div class="date">{{comment.create_date}}</div>
+        <div class="date">{{comment.create_date | date}}</div>
       </div>
-      <div class="right">回复</div>
+      <div class="right" @click="reply">回复</div>
     </div>
     <!-- 楼层 -->
     <hm-floor :count="getCount(0,comment)" v-if="comment.parent" :parent="comment.parent"></hm-floor>
@@ -29,6 +29,10 @@ export default {
       } else {
         return num
       }
+    },
+    reply() {
+      console.log('评论回复')
+      this.$bus.$emit('reply', this.comment.id, this.comment.user.nickname)
     }
   }
 }
