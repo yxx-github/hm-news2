@@ -12,6 +12,7 @@ import MyComment from '../views/MyComment.vue'
 import MyStar from '../views/MyStar.vue'
 import Home from '../views/Home.vue'
 import Detail from '../views/Detail.vue'
+import TabsEdit from '../views/TabsEdit.vue'
 
 // 注册
 Vue.use(VueRouter)
@@ -62,6 +63,10 @@ const router = new VueRouter({
     {
       path: '/detail/:id',
       component: Detail
+    },
+    {
+      path: '/tabsedit',
+      component: TabsEdit
     }
   ]
 })
