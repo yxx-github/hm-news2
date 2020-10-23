@@ -19,11 +19,20 @@
     </div>
     <!-- 搜索推荐 -->
     <div class="search_recommend" v-if="recommendList.length > 0">
-      <div v-for="item in recommendList" :key="item.id">{{ item.title }}</div>
+      <div
+        @click="clickHistoryTag(item.title)"
+        v-for="item in recommendList"
+        :key="item.id"
+      >{{ item.title }}</div>
     </div>
     <!-- 回车搜索文章列表 -->
     <div class="content" v-else-if="postList.length > 0">
-      <hm-post v-for="post in postList" :key="post.id" :post="post"></hm-post>
+      <hm-post
+        @click.native="$router.push(`/detail/${post.id}`)"
+        v-for="post in postList"
+        :key="post.id"
+        :post="post"
+      ></hm-post>
     </div>
     <!-- 历史 -->
     <div class="history" v-else>
@@ -75,6 +84,7 @@ export default {
   },
   methods: {
     async search() {
+      this.recommendList = []
       // 排空 如果搜索的内容为空 就没有必要进行下面的请求了
       if (this.keyword.trim() === '') return
 
