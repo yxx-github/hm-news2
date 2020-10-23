@@ -52,7 +52,7 @@ export default {
   name: 'home',
   data() {
     return {
-      active: 1, // tab栏当前激活的索引值
+      active: 0, // tab栏当前激活的索引值
       tabList: [], // tab栏列表数据
       postList: [], // post 文章列表
       pageIndex: 1, //当前页码
@@ -81,9 +81,33 @@ export default {
   created() {
     this.getTabsList()
   },
+  activated() {
+    // 被 keep-alive 缓存的组件 激活时调用 , ( 切换显示 )
+    console.log('activated')
+    // 从本地取
+    let activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
+    if (activeTabs) {
+      this.tabList = activeTabs
+      this.active = 0 // 让索引值回到初始状态
+      this.getPostList(this.tabList[this.active].id)
+      return
+    }
+  },
+  // deactivated() {
+  //   //  被 keep-alive 缓存的组件 停用时调用 , ( 切换隐藏 )
+  //   console.log('deactivated')
+  // },
   methods: {
     // 获取tab栏目列表
     async getTabsList() {
+      // 先从本地取
+      let activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
+      if (activeTabs) {
+        this.tabList = activeTabs
+        this.getPostList(this.tabList[this.active].id)
+        return // 从本地取到后不需要再发送请求获取
+      }
+
       let res = await this.$axios.get('/category')
       if (res.data.statusCode === 200) {
         this.tabList = res.data.data

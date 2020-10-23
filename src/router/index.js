@@ -22,7 +22,7 @@ const router = new VueRouter({
   routes: [{
       // 重定向
       path: '/',
-      redirect: '/login'
+      redirect: '/home'
     },
     {
       path: '/login',
